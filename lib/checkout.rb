@@ -1,10 +1,12 @@
 Item = Struct.new(:code, :name, :price)
 
-InvoiceItem = Struct.new(:product_code, :amount, :price_per_unit, :charged_unit_price, :charged_amount)
+InvoiceItem = Struct.new(:product_code, :count, :price_per_unit, :charged_unit_price, :charged_amount)
 
 class Invoice
-  def initialize
-    @invoice_items = []
+  def initialize(basket)
+    # [ ('FR1', 55 items, 20 $ each) ]
+    @invoice_items = basket.group_by { |item| item.code }
+      .map { |code, items| InvoiceItem.new(code, items.length, items.first.price) }
   end
 
   def total
@@ -44,6 +46,7 @@ end
 class DefaultRule
   def initialize(basket)
     @basket = basket
+    @invoice = Invoice.new(basket)
   end
 
   def total
@@ -54,6 +57,7 @@ end
 class BuyOneGetOneRule
   def initialize(basket)
     @basket = basket
+    @invoice = Invoice.new(basket)
   end
 
   def total
