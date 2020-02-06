@@ -30,7 +30,7 @@ class Checkout
 
   def total
     if @pricing_rules.include?('buy-one-get-one-free')
-      invoice = BuyOneGetOneRule.new(@basket).apply
+      invoice = BuyOneGetOneFree.new(@basket).apply
       invoice.total
     else
       invoice = DefaultRule.new(@basket).apply
@@ -61,7 +61,7 @@ end
 class DefaultRule < Rule
 end
 
-class BuyOneGetOneRule < Rule
+class BuyOneGetOneFree < Rule
   # Charges only half of the FR1 items
   def apply
     @invoice.invoice_items.each do |invoice_item|
