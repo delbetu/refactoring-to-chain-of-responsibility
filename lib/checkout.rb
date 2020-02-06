@@ -22,7 +22,7 @@ class Checkout
       else
         # charge first and half of the rest
         first_fruit_item = fruit_tea_items.pop
-        fruit_tea_items_total = first_fruit_item + fruit_tea_items.inject(0) { |total, purchased_product| total + purchased_product.price } / 2
+        fruit_tea_items_total = first_fruit_item.price + fruit_tea_items.inject(0) { |total, purchased_product| total + purchased_product.price } / 2
       end
 
       non_fruit_tea_items_total = non_fruit_tea_items.inject(0) { |total, purchased_product| total + purchased_product.price }
