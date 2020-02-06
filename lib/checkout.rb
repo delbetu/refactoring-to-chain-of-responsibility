@@ -1,10 +1,23 @@
 Item = Struct.new(:code, :name, :price)
 
+InvoiceItem = Struct.new(:product_code, :amount, :price_per_unit, :charged_unit_price, :charged_amount)
+
+class Invoice
+  def initialize
+    @invoice_items = []
+  end
+
+  def total
+    @invoice_items.inject(0) do |total, invoice_item|
+      total + ( invoice_item.charged_unit_price * invoice_item.charged_amount )
+    end
+  end
+end
+
 class Checkout
   def initialize(pricing_rules=[])
     @pricing_rules = pricing_rules
     @basket = []
-    @total_price = 0
   end
 
   def scan(item)
@@ -13,23 +26,9 @@ class Checkout
 
   def total
     if @pricing_rules.include?('buy-one-get-one-free')
-      fruit_tea_items = @basket.find_all {|purchased_product| purchased_product.code == 'FR1'}
-      non_fruit_tea_items = @basket.find_all {|purchased_product| purchased_product.code != 'FR1'}
-
-      if fruit_tea_items.length.even?
-        # charge only half of the items
-        fruit_tea_items_total = fruit_tea_items.inject(0) { |total, purchased_product| total + purchased_product.price } / 2
-      else
-        # charge first and half of the rest
-        first_fruit_item = fruit_tea_items.pop
-        fruit_tea_items_total = first_fruit_item.price + fruit_tea_items.inject(0) { |total, purchased_product| total + purchased_product.price } / 2
-      end
-
-      non_fruit_tea_items_total = non_fruit_tea_items.inject(0) { |total, purchased_product| total + purchased_product.price }
-
-      non_fruit_tea_items_total + fruit_tea_items_total
+      BuyOneGetOneRule.new(@basket).total
     else
-      @basket.inject(0) { |total, purchased_product| total + purchased_product.price }
+      DefaultRule.new(@basket).total
     end
   end
 
@@ -39,5 +38,39 @@ class Checkout
 
   def fruit_tea_already_added(item)
     basket.find { |product| product.code = item.code }
+  end
+end
+
+class DefaultRule
+  def initialize(basket)
+    @basket = basket
+  end
+
+  def total
+    @basket.inject(0) { |total, purchased_product| total + purchased_product.price }
+  end
+end
+
+class BuyOneGetOneRule
+  def initialize(basket)
+    @basket = basket
+  end
+
+  def total
+    fruit_tea_items = @basket.find_all {|purchased_product| purchased_product.code == 'FR1'}
+    non_fruit_tea_items = @basket.find_all {|purchased_product| purchased_product.code != 'FR1'}
+
+    if fruit_tea_items.length.even?
+      # charge only half of the items
+      fruit_tea_items_total = fruit_tea_items.inject(0) { |total, purchased_product| total + purchased_product.price } / 2
+    else
+      # charge first and half of the rest
+      first_fruit_item = fruit_tea_items.pop
+      fruit_tea_items_total = first_fruit_item.price + fruit_tea_items.inject(0) { |total, purchased_product| total + purchased_product.price } / 2
+    end
+
+    non_fruit_tea_items_total = non_fruit_tea_items.inject(0) { |total, purchased_product| total + purchased_product.price }
+
+    non_fruit_tea_items_total + fruit_tea_items_total
   end
 end
