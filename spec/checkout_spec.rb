@@ -16,5 +16,16 @@ describe Checkout do
       subject.scan(item)
       expect(subject.total).to eq 51.0
     end
+
+    it 'sums both item prices when adding different items' do
+      item = Item.new('FR1', 'product1', 25.5)
+      item2 = Item.new('FR2', 'product2', 20)
+
+      subject = Checkout.new
+      subject.scan(item)
+      subject.scan(item2)
+
+      expect(subject.total).to eq 45.5
+    end
   end
 end
