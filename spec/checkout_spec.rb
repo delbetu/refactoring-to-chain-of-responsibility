@@ -74,6 +74,19 @@ describe Checkout do
       subject.scan(item)
       expect(subject.total).to eq 30.0
     end
+
+    it 'charges the non fruit items whitout discount' do
+      item = Item.new('FR1', 'product1', 10.0)
+      item2 = Item.new('FR2', 'product2', 15.0)
+      subject = Checkout.new(['buy-one-get-one-free'])
+      subject.scan(item)
+      subject.scan(item)
+      subject.scan(item)
+      subject.scan(item)
+      subject.scan(item)
+      subject.scan(item2)
+      expect(subject.total).to eq 45.0
+    end
   end
 
   describe 'discount for bulk purchases'
