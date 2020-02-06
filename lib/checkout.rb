@@ -43,23 +43,24 @@ class Checkout
   end
 end
 
-class DefaultRule
+class Rule
   def initialize(basket)
     @basket = basket
     @invoice = Invoice.new(basket)
   end
 
+  def apply
+    @invoice
+  end
+end
+
+class DefaultRule < Rule
   def total
     @basket.inject(0) { |total, purchased_product| total + purchased_product.price }
   end
 end
 
-class BuyOneGetOneRule
-  def initialize(basket)
-    @basket = basket
-    @invoice = Invoice.new(basket)
-  end
-
+class BuyOneGetOneRule < Rule
   def total
     fruit_tea_items = @basket.find_all {|purchased_product| purchased_product.code == 'FR1'}
     non_fruit_tea_items = @basket.find_all {|purchased_product| purchased_product.code != 'FR1'}
