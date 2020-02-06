@@ -27,5 +27,10 @@ describe Checkout do
 
       expect(subject.total).to eq 45.5
     end
+
+    it 'returns 0 when no item was added' do
+      subject = Checkout.new
+      expect(subject.total).to eq 0.0
+    end
   end
 end
