@@ -3,6 +3,8 @@ Item = Struct.new(:code, :name, :price)
 InvoiceItem = Struct.new(:product_code, :count, :price_per_unit, :charged_unit_price, :charged_count)
 
 class Invoice
+  attr_reader :invoice_items
+
   def initialize(basket)
     # [ ('FR1', 55 items, 20 $ each) ]
     @invoice_items = basket.group_by { |item| item.code }
@@ -28,7 +30,8 @@ class Checkout
 
   def total
     if @pricing_rules.include?('buy-one-get-one-free')
-      BuyOneGetOneRule.new(@basket).total
+      invoice = BuyOneGetOneRule.new(@basket).apply
+      invoice.total
     else
       invoice = DefaultRule.new(@basket).apply
       invoice.total
@@ -59,21 +62,14 @@ class DefaultRule < Rule
 end
 
 class BuyOneGetOneRule < Rule
-  def total
-    fruit_tea_items = @basket.find_all {|purchased_product| purchased_product.code == 'FR1'}
-    non_fruit_tea_items = @basket.find_all {|purchased_product| purchased_product.code != 'FR1'}
-
-    if fruit_tea_items.length.even?
-      # charge only half of the items
-      fruit_tea_items_total = fruit_tea_items.inject(0) { |total, purchased_product| total + purchased_product.price } / 2
-    else
-      # charge first and half of the rest
-      first_fruit_item = fruit_tea_items.pop
-      fruit_tea_items_total = first_fruit_item.price + fruit_tea_items.inject(0) { |total, purchased_product| total + purchased_product.price } / 2
+  # Charges only half of the FR1 items
+  def apply
+    @invoice.invoice_items.each do |invoice_item|
+      if invoice_item.product_code == 'FR1'
+        invoice_item.charged_count = (invoice_item.count.to_f / 2).ceil
+      end
     end
 
-    non_fruit_tea_items_total = non_fruit_tea_items.inject(0) { |total, purchased_product| total + purchased_product.price }
-
-    non_fruit_tea_items_total + fruit_tea_items_total
+    @invoice
   end
 end
