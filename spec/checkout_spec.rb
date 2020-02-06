@@ -32,5 +32,10 @@ describe Checkout do
       subject = Checkout.new
       expect(subject.total).to eq 0.0
     end
+
+    it 'can sum a lot of items' do
+      100.times {|i| subject.scan(Item.new("FR#{i}", "product#{i}", 10.0*i))}
+      expect(subject.total).to eq (100*(100-1)/2)*10
+    end
   end
 end
