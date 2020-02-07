@@ -89,5 +89,25 @@ describe Checkout do
     end
   end
 
-  describe 'discount for bulk purchases'
+  describe 'discount for bulk purchases' do
+    # If you buy 3 or more apples, the price should drop to $4.50.
+    it 'charges regular price when buying two apples' do
+      apple = Item.new('AP1', 'apple', 5.0)
+      subject = Checkout.new(['bulk-discount'])
+      subject.scan(apple)
+      subject.scan(apple)
+
+      expect(subject.total).to eq(10.0)
+    end
+
+    it 'applies 10% discount when buying 3 apples' do
+      apple = Item.new('AP1', 'apple', 5.0)
+      subject = Checkout.new(['bulk-discount'])
+      subject.scan(apple)
+      subject.scan(apple)
+      subject.scan(apple)
+
+      expect(subject.total).to eq(4.5*3)
+    end
+  end
 end
