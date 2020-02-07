@@ -110,4 +110,19 @@ describe Checkout do
       expect(subject.total).to eq(4.5*3)
     end
   end
+
+  describe 'mixing discount rules' do
+    it 'applies bulk discount and buy-one-get-one-free rules' do
+      apple = Item.new('AP1', 'apple', 5.0)
+      fruit_tea = Item.new('FR1', 'product1', 10.0)
+
+      subject = Checkout.new(['buy-one-get-one-free', 'bulk-discount'])
+
+      5.times { subject.scan(fruit_tea) }
+
+      5.times { subject.scan(apple) }
+
+      expect(subject.total).to eq(4.5*5 + 10.0*3)
+    end
+  end
 end
