@@ -30,15 +30,10 @@ class Checkout
 
   def total
     invoice = create_invoice_for(@basket)
+    rules = create_rule_chain
 
-    invoice = DefaultRule.new.apply(invoice)
-
-    if @pricing_rules.include?('buy-one-get-one-free')
-      invoice = BuyOneGetOneFree.new.apply(invoice)
-    end
-
-    if @pricing_rules.include?('bulk-discount')
-      invoice = BulkDiscountRule.new.apply(invoice)
+    rules.each do |rule|
+      invoice = rule.apply(invoice)
     end
 
     invoice.total
@@ -54,6 +49,19 @@ class Checkout
 
   def create_invoice_for(basket)
     Invoice.new(basket)
+  end
+
+  def create_rule_chain
+    rules = [DefaultRule.new]
+
+    if @pricing_rules.include?('buy-one-get-one-free')
+      rules << BuyOneGetOneFree.new
+    end
+
+    if @pricing_rules.include?('bulk-discount')
+      rules << BulkDiscountRule.new
+    end
+    rules
   end
 end
 
