@@ -30,13 +30,14 @@ class Checkout
 
   def total
     invoice = create_invoice_for(@basket)
+
+    invoice = DefaultRule.new(invoice).apply
+
     if @pricing_rules.include?('buy-one-get-one-free')
       invoice = BuyOneGetOneFree.new(invoice).apply
-      invoice.total
-    else
-      invoice = DefaultRule.new(invoice).apply
-      invoice.total
     end
+
+    invoice.total
   end
 
   private
