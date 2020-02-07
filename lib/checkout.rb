@@ -2,6 +2,8 @@ Item = Struct.new(:code, :name, :price)
 
 InvoiceItem = Struct.new(:product_code, :count, :price_per_unit, :charged_unit_price, :charged_count)
 
+# Represents items grouped by their code
+# Calculates total based on the final prices and items count of these groups
 class Invoice
   attr_reader :invoice_items
 
@@ -42,10 +44,6 @@ class Checkout
   private
 
   attr_reader :basket
-
-  def fruit_tea_already_added(item)
-    basket.find { |product| product.code = item.code }
-  end
 
   def create_invoice_for(basket)
     Invoice.new(basket)
