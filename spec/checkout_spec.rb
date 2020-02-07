@@ -1,4 +1,5 @@
 require 'checkout'
+require 'byebug'
 
 describe Checkout do
   describe 'accumulating item prices' do
