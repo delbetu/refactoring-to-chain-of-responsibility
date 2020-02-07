@@ -29,11 +29,12 @@ class Checkout
   end
 
   def total
+    invoice = create_invoice_for(@basket)
     if @pricing_rules.include?('buy-one-get-one-free')
-      invoice = BuyOneGetOneFree.new(@basket).apply
+      invoice = BuyOneGetOneFree.new(invoice).apply
       invoice.total
     else
-      invoice = DefaultRule.new(@basket).apply
+      invoice = DefaultRule.new(invoice).apply
       invoice.total
     end
   end
@@ -45,12 +46,15 @@ class Checkout
   def fruit_tea_already_added(item)
     basket.find { |product| product.code = item.code }
   end
+
+  def create_invoice_for(basket)
+    Invoice.new(basket)
+  end
 end
 
 class Rule
-  def initialize(basket)
-    @basket = basket
-    @invoice = Invoice.new(basket)
+  def initialize(invoice)
+    @invoice = invoice
   end
 
   def apply
