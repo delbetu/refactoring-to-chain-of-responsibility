@@ -124,5 +124,59 @@ describe Checkout do
 
       expect(subject.total).to eq(4.5*5 + 10.0*3)
     end
+
+    describe 'applying rules to multiple products' do
+      it 'gives you one apple and a fruit-tea for free' do
+        stub_const('BuyOneGetOneFreeRule::BUY_ONE_GET_ONE_FREE_CODES', ['AP1', 'FR1'])
+        apple = Item.new('AP1', 'apple', 5.0)
+        fruit_tea = Item.new('FR1', 'product1', 10.0)
+
+        subject = Checkout.new(['buy-one-get-one-free'])
+
+        subject.scan(fruit_tea)
+        subject.scan(fruit_tea)
+        subject.scan(apple)
+        subject.scan(apple)
+
+        expect(subject.total).to eq(5.0*1 + 10.0*1)
+      end
+
+      it 'gives you 10% discount on fruit-tea and apple' do
+        stub_const('BulkDiscountRule::BULK_DISCOUNT_CODES', ['AP1', 'FR1'])
+
+        apple = Item.new('AP1', 'apple', 5.0)
+        fruit_tea = Item.new('FR1', 'product1', 10.0)
+
+        subject = Checkout.new(['bulk-discount'])
+
+        subject.scan(fruit_tea)
+        subject.scan(fruit_tea)
+        subject.scan(fruit_tea)
+        subject.scan(apple)
+        subject.scan(apple)
+        subject.scan(apple)
+
+        expect(subject.total).to eq(4.5*3 + 9.0*3)
+      end
+
+      it 'gives you 10% discount and buy-one-get-one free for fruit-tea and apple' do
+        stub_const('BulkDiscountRule::BULK_DISCOUNT_CODES', ['AP1', 'FR1'])
+        stub_const('BuyOneGetOneFreeRule::BUY_ONE_GET_ONE_FREE_CODES', ['AP1', 'FR1'])
+
+        apple = Item.new('AP1', 'apple', 5.0)
+        fruit_tea = Item.new('FR1', 'product1', 10.0)
+
+        subject = Checkout.new(['bulk-discount', 'buy-one-get-one-free'])
+
+        subject.scan(fruit_tea)
+        subject.scan(fruit_tea)
+        subject.scan(fruit_tea)
+        subject.scan(apple)
+        subject.scan(apple)
+        subject.scan(apple)
+
+        expect(subject.total).to eq(4.5*2 + 9.0*2)
+      end
+    end
   end
 end

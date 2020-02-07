@@ -76,14 +76,17 @@ class DefaultRule < Rule
 end
 
 class BulkDiscountRule < Rule
+  # TODO: these can be configured from yaml file
+  BULK_DISCOUNT_CODES = ['AP1'].freeze
+  DISCOUNT_PERCENTAGE = 0.10.freeze
+  MINIMUM_BULK_COUNT = 3.freeze
+
   # Reduces the charged price by 10% when a product has more than 3 units
   def apply(invoice)
-    discount_percentage = 0.10
-    minimum_bulk_count = 3
     invoice.invoice_items.each do |invoice_item|
-      if invoice_item.product_code == 'AP1' && invoice_item.count >= minimum_bulk_count
+      if BULK_DISCOUNT_CODES.include?(invoice_item.product_code) && invoice_item.count >= MINIMUM_BULK_COUNT
         invoice_item.charged_unit_price =
-          invoice_item.price_per_unit - (invoice_item.price_per_unit * discount_percentage)
+          invoice_item.price_per_unit - (invoice_item.price_per_unit * DISCOUNT_PERCENTAGE)
       end
     end
 
@@ -92,10 +95,13 @@ class BulkDiscountRule < Rule
 end
 
 class BuyOneGetOneFreeRule < Rule
+  # TODO: this can be configured from yaml file
+  BUY_ONE_GET_ONE_FREE_CODES = ['FR1'].freeze
+
   # Charges only half of the FR1 items
   def apply(invoice)
     invoice.invoice_items.each do |invoice_item|
-      if invoice_item.product_code == 'FR1'
+      if BUY_ONE_GET_ONE_FREE_CODES.include?(invoice_item.product_code)
         invoice_item.charged_count = (invoice_item.count.to_f / 2).ceil
       end
     end
