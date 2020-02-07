@@ -31,14 +31,14 @@ class Checkout
   def total
     invoice = create_invoice_for(@basket)
 
-    invoice = DefaultRule.new(invoice).apply
+    invoice = DefaultRule.new.apply(invoice)
 
     if @pricing_rules.include?('buy-one-get-one-free')
-      invoice = BuyOneGetOneFree.new(invoice).apply
+      invoice = BuyOneGetOneFree.new.apply(invoice)
     end
 
     if @pricing_rules.include?('bulk-discount')
-      invoice = BulkDiscountRule.new(invoice).apply
+      invoice = BulkDiscountRule.new.apply(invoice)
     end
 
     invoice.total
@@ -58,12 +58,8 @@ class Checkout
 end
 
 class Rule
-  def initialize(invoice)
-    @invoice = invoice
-  end
-
-  def apply
-    @invoice
+  def apply(invoice)
+    invoice
   end
 end
 
@@ -75,29 +71,29 @@ end
 
 class BulkDiscountRule < Rule
   # Reduces the charged price by 10% when a product has more than 3 units
-  def apply
+  def apply(invoice)
     discount_percentage = 0.10
     minimum_bulk_count = 3
-    @invoice.invoice_items.each do |invoice_item|
+    invoice.invoice_items.each do |invoice_item|
       if invoice_item.product_code == 'AP1' && invoice_item.count >= minimum_bulk_count
         invoice_item.charged_unit_price =
           invoice_item.price_per_unit - (invoice_item.price_per_unit * discount_percentage)
       end
     end
 
-    @invoice
+    invoice
   end
 end
 
 class BuyOneGetOneFree < Rule
   # Charges only half of the FR1 items
-  def apply
-    @invoice.invoice_items.each do |invoice_item|
+  def apply(invoice)
+    invoice.invoice_items.each do |invoice_item|
       if invoice_item.product_code == 'FR1'
         invoice_item.charged_count = (invoice_item.count.to_f / 2).ceil
       end
     end
 
-    @invoice
+    invoice
   end
 end
