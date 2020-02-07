@@ -180,4 +180,16 @@ describe Checkout do
       expect(subject.total).to eq(4.5*2 + 9.0*2)
     end
   end
+
+  describe 'egde cases' do
+    it 'returns 0 when there are no items' do
+      subject = Checkout.new
+      expect(subject.total).to eq 0
+    end
+
+    it 'returns 0 when there are no items' do
+      subject = Checkout.new(['buy-one-get-one-free', 'bulk-discount'])
+      expect(subject.total).to eq 0
+    end
+  end
 end
