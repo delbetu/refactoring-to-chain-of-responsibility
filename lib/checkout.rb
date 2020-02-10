@@ -32,11 +32,8 @@ class Checkout
 
   def total
     invoice = create_invoice_for(@basket)
-    rules = create_rule_chain
-
-    rules.each do |rule|
-      invoice = rule.apply(invoice)
-    end
+    chain = create_rule_chain
+    chain.start(invoice)
 
     invoice.total
   end
@@ -50,22 +47,45 @@ class Checkout
   end
 
   def create_rule_chain
-    rules = [DefaultRule.new]
+    chain = RuleChain.new(DefaultRule.new)
 
     if @pricing_rules.include?('buy-one-get-one-free')
-      rules << BuyOneGetOneFreeRule.new
+      chain.use(BuyOneGetOneFreeRule.new)
     end
 
     if @pricing_rules.include?('bulk-discount')
-      rules << BulkDiscountRule.new
+      chain.use(BulkDiscountRule.new)
     end
-    rules
+    chain
+  end
+end
+
+class RuleChain
+  def initialize(initial_rule)
+    @initial_rule = @last_rule = initial_rule
+  end
+
+  def start(package)
+    use(LastRule.new) # Ensure last item will finish the chaining calls
+    @initial_rule.apply(package)
+  end
+
+  def use(rule)
+    @last_rule.next_rule = rule
+    @last_rule = @last_rule.next_rule
   end
 end
 
 class Rule
+  attr_accessor :next_rule
+
   def apply(invoice)
-    invoice
+    next_rule.apply(invoice)
+  end
+end
+
+class LastRule < Rule
+  def apply(package) # Do not continue the chain
   end
 end
 
@@ -90,7 +110,7 @@ class BulkDiscountRule < Rule
       end
     end
 
-    invoice
+    next_rule.apply(invoice)
   end
 end
 
@@ -106,6 +126,6 @@ class BuyOneGetOneFreeRule < Rule
       end
     end
 
-    invoice
+    next_rule.apply(invoice)
   end
 end
