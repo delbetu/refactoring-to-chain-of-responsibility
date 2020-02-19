@@ -1,6 +1,6 @@
 ## The problem
 
-TextMaster's quest for global domination has prompted us to open a supermarket - we sell only three products:
+Given a supermarket which sell only three products:
 
 ```
 +--------------|--------------|---------+
@@ -12,12 +12,11 @@ TextMaster's quest for global domination has prompted us to open a supermarket -
 +--------------|--------------|---------+
 ```
 
-Our CEO is a big fan of buy-one-get-one-free offers and of fruit tea. He wants us to add a rule to do this.
+The owner is a big fan of buy-one-get-one-free offers and of fruit tea. He wants us to add a rule to do this.
 
-The COO, though, likes low prices and wants people buying apple to get a price 
+Also he likes low prices and wants people buying apple to get a price 
 discount for bulk purchases. If you buy 3 or more apples, the price should drop to $4.50.
-Our check-out can scan items in any order, and because the CEO and COO change 
-their minds often, it needs to be flexible regarding our pricing rules.
+Our check-out can scan items in any order, and it needs to be flexible regarding our pricing rules.
 
 The interface to our checkout looks like this:
 
@@ -39,14 +38,9 @@ Total price expected: $3.11
 Basket: AP1, AP1, FR1, AP1
 Total price expected: $16.61
 
-PS: Here at TextMaster, we love specs ;)
+## The solution
 
-## Submitting your solution
+This repository implements a solution to the previous problem.  
+If you follow the commits you can see how it was building.  
+In particular you can see the usage of `TDD`, `Refactoring` and `Design-Patterns` applied.
 
-Please send a zip archive containing your code and any relevant materials
-in an email along with your resume and motivations to jobs+ror@textmaster.com, please add
-tech-test@textmaster.com in CC. **Please do not put your solutions on GitHub.**
-
-The purpose of this test is to verify your abilities to code and see how you architect an application.
-
-Finally, please note that even if you have questions about the test we will not answer them, do what you think is best.
