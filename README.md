@@ -41,6 +41,6 @@ Total price expected: $16.61
 ## The solution
 
 This repository implements a solution to the previous problem.  
-If you follow the commits you can see how it was building.  
-In particular you can see the usage of `TDD`, `Refactoring` and `Design-Patterns` applied.
+If you follow the commits you can see how it was built.  
+In particular, you can see the usage of `TDD`, `Refactoring` and `Design-Patterns` applied.
 
