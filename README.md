@@ -1,3 +1,7 @@
+## Summary
+This is a code example that showcase my ability to solve real life problems, achiving a flexible, maintainable OOP solution by applying best practices such us TDD, Refactoring, Design-Patterns.  
+I encourage you to follow the commit's history so you can see how I guided the solution by tests, and after having a good test suite I started refactoring.
+
 ## The problem
 
 Given a supermarket which sell only three products:
